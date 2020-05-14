@@ -1,0 +1,42 @@
+
+pipeline {
+   agent any
+
+stages {
+    stage ("Git checkout ") 
+      {
+        steps {
+               git 'https://github.com/tusharheda08/onewebapp.git'  
+               }
+        }
+    
+    
+       stage("Maven Build") {
+         steps {
+            // def mvnHome = tool name: 'Maven', type: 'maven'
+           //  sh "${mvnHome}/bin/mvn package"
+            
+            sh script: 'mvn -f webapp-one/pom.xml'
+            
+            
+         }
+      } 
+      stage("Build Docker Image") {
+         steps {
+        
+            sh 'docker build -t tusharheda/webapp-one:1.0.0 .'
+            
+         }
+      } 
+    stage("Docker Push Image") {
+         steps {
+         withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockerHubPassword')]) {
+          sh "docker login -u tusharheda -p ${dockerHubPassword}"
+    }
+        sh 'docker push tusharheda/webapp-one:1.0.0'
+            
+         }
+      } 
+  }
+    
+}

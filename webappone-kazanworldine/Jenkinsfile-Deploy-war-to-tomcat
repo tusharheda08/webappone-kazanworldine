@@ -1,0 +1,42 @@
+currentBuild.displayName="Hello-World-Project-#"+currentBuild.number
+
+pipeline {
+   agent any
+
+   stages {
+      stage("Git Checkout") {
+         steps {
+          git 'https://github.com/tusharheda08/onewebapp.git/'
+           // git 'https://github.com/tusharheda08/onewebapp'
+            
+         }
+      }
+       stage("Maven Build") {
+         steps {
+            // def mvnHome = tool name: 'Maven', type: 'maven'
+           //  sh "${mvnHome}/bin/mvn package"
+            
+            sh script: 'mvn -f webapp-one/pom.xml'
+         }
+      } 
+      
+           stage("Deploy to tomcat"){
+             steps{
+           sshagent(['tomcat-new']) {
+           
+          sh """
+           scp -o StrictHostKeyChecking=no webapp-one/target/*.war ec2-user@172.31.45.57:/opt/apache-tomcat-8.5.54/webapps/
+           ssh ec2-user@172.31.45.57 /opt/apache-tomcat-8.5.54/bin/shutdown.sh
+           ssh ec2-user@172.31.45.57 /opt/apache-tomcat-8.5.54/bin/startup.sh
+           
+           """
+               
+           }
+        }
+     }
+       
+    }
+ }
+      
+   
+

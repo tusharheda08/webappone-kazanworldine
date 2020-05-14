@@ -1,0 +1,21 @@
+currentBuild.displayName="Hello-World-Project-#"+currentBuild.number
+
+properties([[$class: 'JiraProjectProperty'], 
+parameters([choice(choices: ['master', 'development', 'testing'],
+description: 'Build project with the branches ', name: 'BranchName')])])
+
+pipeline {
+   agent any
+
+   stages {
+      stage("Git Checkout") {
+         steps {
+          echo "pulling changes from the branch ${params.BranchName}"
+          git url:'https://github.com/tusharheda08/onewebapp.git/',branch:"${params.BranchName}"
+           // git 'https://github.com/tusharheda08/onewebapp'
+            
+         }
+      }
+       
+    }
+ }

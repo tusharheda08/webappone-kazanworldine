@@ -1,0 +1,36 @@
+currentBuild.displayName="Hello-World-Project-#"+currentBuild.number
+
+pipeline {
+   agent any
+
+   stages {
+      stage("Git Checkout") {
+         steps {
+          git 'https://github.com/tusharheda08/onewebapp.git/'
+           // git 'https://github.com/tusharheda08/onewebapp'
+            
+         }
+      }
+       stage("Maven Build") {
+         steps {
+            // def mvnHome = tool name: 'Maven', type: 'maven'
+           //  sh "${mvnHome}/bin/mvn package"
+            
+            sh script: 'mvn -f webapp-one/pom.xml'
+            
+            
+         }
+      } 
+      
+      stage ("Email Notification") {
+       steps {
+           mail bcc: '', body: '''hello Welcome to Jenkins job email notification
+          Thanks,
+          Tushar''', cc: '', from: '', replyTo: '', subject: 'Jenkins job email notification', to: 'tusharheda08@gmail.com'
+        }
+      }  
+       
+    }
+ }
+      
+   
